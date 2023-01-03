@@ -1,0 +1,67 @@
+---
+mgp: mgp-0003
+title: Add more validators to the committee during election
+date-created: 2022-12-30
+author: Jason (mapdev33)
+status: DRAFT
+discussions-to: https://forum.mapprotocol.io/t/proposal-add-more-validators-to-the-committee-during-election-2022-12-a-003/4613
+---
+## Overview
+
+The Validator Committee is responsible for block proposing during each epoch. The current number of validators in Committee is 30 at the moment. 
+
+## Motivation
+
+Since there are more and more validators joining to the ecosystem, more chances and spots should be opened for new validators in every epoch.
+
+## Specification
+
+The parameter involved with the change is 
+
+```solidity
+   struct ElectableValidators {
+        uint256 min;
+        uint256 max;
+    }
+```
+
+ The function that set the change is 
+
+```solidity
+    function setElectableValidators(uint256 min, uint256 max) public onlyOwner returns (bool) {
+        require(0 < min, "Minimum electable validators cannot be zero");
+        require(min <= max, "Maximum electable validators cannot be smaller than minimum");
+        require(
+            min != electableValidators.min || max != electableValidators.max,
+            "Electable validators not changed"
+        );
+        electableValidators = ElectableValidators(min, max);
+        emit ElectableValidatorsSet(min, max);
+        return true;
+    }
+```
+
+
+
+The proposed change to the function is 
+
+```solidity
+min = 1;
+max = 40;
+```
+
+which means that there are 40 validators elected during an epoch.
+
+## Implementation
+
+The modification of the validator committee number will be in 
+
+[Election.sol](https://github.com/mapprotocol/atlas-contracts/blob/main/contracts/governance/Election.sol)
+
+## Security Considerations
+
+None.
+
+## License
+
+This work is licensed under the Apache License, Version 2.0.
